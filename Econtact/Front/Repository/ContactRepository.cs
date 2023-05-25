@@ -42,5 +42,15 @@ namespace Econtact.Front.Repository
             contacts.RemoveAt(contacts.FindIndex(c => c.Id == id));
             return 1;
         }
+
+        public List<Contact> List(string text)
+        {
+            return contacts.FindAll((c) => (c.FirstName.ToUpper().Contains(text.ToUpper())
+                || c.LastName.ToUpper().Contains(text.ToUpper())
+                || c.Address.ToUpper().Contains(text.ToUpper())
+                || c.ContactNo.ToUpper().Contains(text.ToUpper())
+                || c.Gender.ToUpper().Contains(text.ToUpper()))
+            );
+        }
     }
 }

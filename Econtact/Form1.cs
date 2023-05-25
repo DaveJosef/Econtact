@@ -158,5 +158,16 @@ namespace Econtact
             var source = new BindingSource(bindingList, null);
             dataGridView1.DataSource = source;
         }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            string keyword = textBox1.Text;
+
+            var list = repository.List(keyword);
+
+            var bindingList = new BindingList<Contact>(list);
+            var source = new BindingSource(bindingList, null);
+            dataGridView1.DataSource = source;
+        }
     }
 }
