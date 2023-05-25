@@ -1,5 +1,6 @@
 ﻿using Econtact.Front.Model;
 using Econtact.Front.Repository;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -19,6 +20,34 @@ namespace Econtact
         public Form1()
         {
             InitializeComponent();
+            AddOnStartUp();
+            SetUpNotifyIcon();
+        }
+
+        private void AddOnStartUp()
+        {
+            RegistryKey reg = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+            reg.SetValue("Econtact", Application.ExecutablePath.ToString());
+            //Notify("Successfully added registry!", "Message", ToolTipIcon.Info);
+        }
+
+        private void SetUpNotifyIcon()
+        {
+            ContextMenu cm = new ContextMenu();
+            cm.MenuItems.Add(new MenuItem("Close", Close_Click));
+            cm.MenuItems.Add(new MenuItem("Open App", OpenApp_Click));
+            niEcontact.ContextMenu = cm;
+        }
+
+        private void Close_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void OpenApp_Click(object sender, EventArgs e)
+        {
+            this.Show();
+            this.Activate();
         }
 
         private void label1_Click(object sender, EventArgs e)
@@ -29,6 +58,11 @@ namespace Econtact
         private void label1_Click_1(object sender, EventArgs e)
         {
 
+        }
+
+        private void Notify(string msg, string title, ToolTipIcon icon)
+        {
+            niEcontact.ShowBalloonTip(1000, title, msg, icon);
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
@@ -53,11 +87,13 @@ namespace Econtact
 
             if (result.Id != 0)
             {
-                MessageBox.Show("New Contact Successfully Inserted!");
+                //MessageBox.Show("New Contact Successfully Inserted!");
+                Notify("New Contact Successfully Inserted!", "Econtact: New Contact", ToolTipIcon.Info);
                 Clear();
             } else
             {
-                MessageBox.Show("Failed to Add New Contact. Please, try again.");
+                Notify("Failed to Add New Contact. Please, try again.", "Econtact: New Contact", ToolTipIcon.Error);
+                //MessageBox.Show("Failed to Add New Contact. Please, try again.");
             }
 
             var list = repository.List();
@@ -116,12 +152,14 @@ namespace Econtact
 
             if (result.Id != 0)
             {
-                MessageBox.Show("The Contact was Successfully Updated!");
+                Notify("The Contact was Successfully Updated!", "Econtact: Update", ToolTipIcon.Info);
+                //MessageBox.Show("The Contact was Successfully Updated!");
                 Clear();
             }
             else
             {
-                MessageBox.Show("Failed to Update The Contact. Please, try again.");
+                Notify("Failed to Update The Contact. Please, try again.", "Econtact: Update", ToolTipIcon.Error);
+                //MessageBox.Show("Failed to Update The Contact. Please, try again.");
             }
 
             var list = repository.List();
@@ -144,12 +182,14 @@ namespace Econtact
 
             if (result != 0)
             {
-                MessageBox.Show("The Contact was Successfully Deleted!");
+                Notify("The Contact was Successfully Deleted!", "Econtact: Delete", ToolTipIcon.Info);
+                //MessageBox.Show("The Contact was Successfully Deleted!");
                 Clear();
             }
             else
             {
-                MessageBox.Show("Failed to Delete The Contact. Please, try again.");
+                Notify("Failed to Delete The Contact. Please, try again.", "Econtact: Delete", ToolTipIcon.Error);
+                //MessageBox.Show("Failed to Delete The Contact. Please, try again.");
             }
 
             var list = repository.List();
@@ -168,6 +208,20 @@ namespace Econtact
             var bindingList = new BindingList<Contact>(list);
             var source = new BindingSource(bindingList, null);
             dataGridView1.DataSource = source;
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                e.Cancel = true;
+                Hide();
+            }
         }
     }
 }

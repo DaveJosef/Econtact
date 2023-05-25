@@ -31,6 +31,7 @@ namespace Econtact.Front.Repository
                     c.FirstName = contact.FirstName;
                     c.LastName = contact.LastName;
                     c.Address = contact.Address;
+                    c.ContactNo = contact.ContactNo;
                     c.Gender = contact.Gender;
                 }
             });
